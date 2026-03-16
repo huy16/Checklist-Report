@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, Upload, X, FileVideo, Check, AlertCircle } from 'lucide-react';
+import { Camera, Upload, X, FileVideo, Check, AlertCircle, Sun } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 
 const PhotoUploadItem = ({ item }) => {

@@ -4,7 +4,7 @@ import GeneralInfoForm from './GeneralInfoForm';
 import CategorySection from './CategorySection';
 import { checklistSchema } from '../data/checklistSchema';
 import { omSchema } from '../data/omSchema';
-import { Sun, Share2, FileDown, ChevronUp, Map, ArrowRight } from 'lucide-react';
+import { Sun, Share2, FileDown, ChevronUp, Map, ArrowRight, ShieldCheck, CheckCircle } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import logoCas from '../assets/logo_cas.png';
