@@ -152,69 +152,92 @@ const ChecklistApp = () => {
   const progress = getFormProgress();
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 font-sans selection:bg-primary-100 selection:text-primary-900">
-      {/* Sticky Progress Header */}
-      <div className="sticky top-0 z-40 glass-card border-b border-gray-200/50 px-4 py-3 sm:px-6 lg:px-8 mb-6 animate-fade-in-up">
-        <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <img src={logoCas} alt="CAS" className="h-8 w-auto object-contain" />
-            <div className="hidden sm:block">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Tiến độ</p>
-              <p className="text-sm font-bold text-gray-900 leading-none">{progress}% Hoàn thành</p>
+    <div className="min-h-screen relative overflow-hidden bg-gray-50/50 pb-20 font-sans selection:bg-primary-100 selection:text-primary-900">
+      {/* Mesh Gradient Decorative Background */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary-100/30 blur-[120px] animate-float"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[35%] h-[35%] rounded-full bg-indigo-100/30 blur-[120px] animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-[30%] right-[10%] w-[20%] h-[20%] rounded-full bg-blue-50/40 blur-[80px] animate-float" style={{ animationDelay: '4s' }}></div>
+      </div>
+
+      {/* Sticky Premium Header */}
+      <div className="sticky top-0 z-40 premium-glass border-b border-white/40 px-4 py-4 sm:px-6 lg:px-8 mb-8 animate-fade-in-up">
+        <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="bg-white p-2 rounded-xl shadow-sm border border-gray-100">
+              <img src={logoCas} alt="CAS" className="h-8 w-auto object-contain" />
+            </div>
+            <div className="hidden md:block">
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Current Progress</p>
+              <p className="text-sm font-black text-gray-900 leading-none">{progress}% <span className="text-primary-600">Complete</span></p>
             </div>
           </div>
           
-          <div className="flex-1 max-w-xs">
-            <div className="w-full bg-gray-100 rounded-full h-2">
+          <div className="flex-1 max-w-sm hidden sm:block">
+            <div className="tech-progress-track">
               <div 
-                className={`h-2 rounded-full transition-all duration-700 ease-out ${progress === 100 ? 'bg-green-500' : 'bg-primary-600'}`} 
+                className={`tech-progress-fill rounded-full ${progress === 100 ? 'bg-green-500' : 'bg-primary-600'}`} 
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
           </div>
 
-          <button 
-            onClick={() => setShowQuickNav(!showQuickNav)}
-            className="p-2 rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors shadow-sm active:scale-95"
-          >
-            <Map size={20} />
-          </button>
+          <div className="flex items-center gap-2">
+            <div className="bg-primary-50 px-3 py-1 rounded-full border border-primary-100 sm:hidden">
+              <span className="text-xs font-black text-primary-700">{progress}%</span>
+            </div>
+            <button 
+              onClick={() => setShowQuickNav(!showQuickNav)}
+              className="p-2.5 rounded-xl bg-white border border-gray-200 text-gray-600 hover:text-primary-600 hover:border-primary-200 transition-all shadow-sm active:scale-90 flex items-center gap-2"
+            >
+              <Map size={18} />
+              <span className="hidden sm:inline text-xs font-bold uppercase tracking-wider">Navigate</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-        <div className="text-center mb-10">
-          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl mt-4">
-            Solar System O&M
-            <span className="block text-primary-600 mt-2">Health Check & Measurement</span>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/80 backdrop-blur-md border border-white/50 shadow-sm mb-6 animate-float">
+            <span className="relative flex h-2 w-2 mr-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
+            </span>
+            <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Next-Gen Checklist Engine</span>
+          </div>
+
+          <h1 className="text-4xl font-black text-gray-900 tracking-tighter sm:text-6xl mb-4">
+            <span className="text-gradient">Solar System</span> O&M
+            <span className="block text-gray-900 mt-1">Health & Analytics</span>
           </h1>
-          <p className="mt-3 max-w-2xl text-base text-gray-500 mx-auto font-medium">
-            Tự động hóa doanh nghiệp & Giải phóng tâm trí bạn
+          <p className="mt-4 max-w-2xl text-lg text-gray-500 mx-auto font-medium leading-relaxed">
+            Automating field intelligence & precision infrastructure diagnostics
           </p>
           
-          <div className="mt-8 flex justify-center">
-            <div className="bg-gray-200/50 p-1 rounded-xl inline-flex relative shadow-inner">
+          <div className="mt-10 flex justify-center">
+            <div className="bg-gray-200/40 p-1.5 rounded-2xl inline-flex relative border border-white/20 shadow-inner backdrop-blur-sm">
               <button
                 type="button"
                 onClick={() => { setActiveSchemaType('install'); methods.reset(); }}
-                className={`relative px-6 py-2.5 text-sm font-bold rounded-lg transition-all duration-300 z-10 ${
+                className={`relative px-8 py-3 text-xs font-black rounded-xl transition-all duration-300 z-10 uppercase tracking-widest ${
                   activeSchemaType === 'install' 
-                  ? 'text-primary-700 shadow-md bg-white' 
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'text-primary-700 shadow-xl bg-white border border-gray-100' 
+                  : 'text-gray-500 hover:text-gray-900'
                 }`}
               >
-                Lắp đặt (Install)
+                Installation
               </button>
               <button
                 type="button"
                 onClick={() => { setActiveSchemaType('om'); methods.reset(); }}
-                className={`relative px-6 py-2.5 text-sm font-bold rounded-lg transition-all duration-300 z-10 ${
+                className={`relative px-8 py-3 text-xs font-black rounded-xl transition-all duration-300 z-10 uppercase tracking-widest ${
                   activeSchemaType === 'om' 
-                  ? 'text-primary-700 shadow-md bg-white' 
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'text-primary-700 shadow-xl bg-white border border-gray-100' 
+                  : 'text-gray-500 hover:text-gray-900'
                 }`}
               >
-                Bảo trì (O&M)
+                Maintenance
               </button>
             </div>
           </div>
@@ -246,31 +269,33 @@ const ChecklistApp = () => {
               </div>
             </div>
 
-            <div className="pt-10 mb-20">
+            <div className="pt-12 mb-20 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`group w-full flex justify-center items-center py-5 px-6 border border-transparent rounded-2xl shadow-xl leading-6 font-black text-lg text-white transition-all transform btn-hover-effect
-                  ${isSubmitting ? 'bg-indigo-400 cursor-not-allowed' : 'bg-primary-600 hover:bg-primary-700 focus:outline-hidden focus:ring-4 focus:ring-primary-100'}`}
+                className={`group w-full flex justify-center items-center py-6 px-8 rounded-3xl shadow-2xl leading-6 font-black text-xl text-white transition-all transform btn-premium btn-hover-effect
+                  ${isSubmitting ? 'cursor-not-allowed contrast-75' : 'hover:shadow-primary-600/30 focus:outline-hidden focus:ring-4 focus:ring-primary-100'}`}
               >
                 {isSubmitting ? (
                   <span className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin -ml-1 mr-4 h-7 w-7 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Đang tạo File PDF...
+                    Synthesizing Intelligence...
                   </span>
                 ) : (
                   <>
-                    <FileDown className="mr-3 h-6 w-6 group-hover:animate-bounce" />
-                    XUẤT BÁO CÁO NGAY
+                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <FileDown className="mr-3 h-7 w-7 group-hover:animate-bounce" />
+                    GENERATE AUDIT REPORT
                   </>
                 )}
               </button>
-              <p className="text-center text-gray-400 text-xs mt-4 font-medium italic">
-                Báo cáo sẽ được tổng hợp đầy đủ hình ảnh và kết quả đo kiểm
-              </p>
+              <div className="mt-6 flex items-center justify-center space-x-2 text-gray-400 font-bold uppercase tracking-[0.15em] text-[10px]">
+                <ShieldCheck size={14} className="text-primary-500" />
+                <span>Encrypted PDF Export • Zero-Trust Compliance</span>
+              </div>
             </div>
           </form>
         </FormProvider>

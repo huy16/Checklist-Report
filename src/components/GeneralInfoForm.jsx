@@ -5,40 +5,41 @@ const GeneralInfoForm = ({ schema }) => {
   const { register, formState: { errors } } = useFormContext();
 
   return (
-    <div className="mb-8 bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-primary-100/20">
-      <div className="p-6 sm:p-8 bg-gradient-to-br from-primary-50/50 via-white to-white border-b border-gray-50 flex items-center justify-between">
+    <div className="mb-12 premium-glass floating-card rounded-[2.5rem] overflow-hidden group">
+      <div className="p-8 sm:p-10 border-b border-white/40 bg-gradient-to-br from-primary-50/30 to-transparent flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-black text-gray-900 tracking-tight">{schema.title}</h2>
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Thông tin cơ bản</p>
+          <h2 className="text-2xl font-black text-gray-900 tracking-tighter">{schema.title}</h2>
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-2">Core Audit Metadata</p>
         </div>
-        <div className="hidden sm:block p-3 bg-white rounded-2xl shadow-sm border border-gray-100">
-          <svg className="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        <div className="bg-white/80 p-4 rounded-3xl shadow-sm border border-white/50 animate-float">
+          <svg className="w-8 h-8 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
         </div>
       </div>
-      <div className="p-6 sm:p-8">
-        <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2">
+      <div className="p-8 sm:p-10">
+        <div className="grid grid-cols-1 gap-y-8 gap-x-8 sm:grid-cols-2">
           {schema.fields.map((field) => (
-            <div key={field.id} className="sm:col-span-1 group">
-              <label htmlFor={field.id} className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2 group-focus-within:text-primary-600 transition-colors">
+            <div key={field.id} className="sm:col-span-1 group/field">
+              <label htmlFor={field.id} className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 group-focus-within/field:text-primary-600 transition-colors">
                 {field.label}
               </label>
               <div className="relative">
                 <input
                   type={field.type === 'date' ? 'date' : field.type === 'number' ? 'number' : 'text'}
                   id={field.id}
-                  placeholder={`Nhập ${field.label.toLowerCase()}...`}
+                  placeholder={`Specify ${field.label.toLowerCase()}...`}
                   autoComplete="off"
-                  className={`block w-full rounded-2xl border-0 py-3.5 px-5 text-gray-900 shadow-sm ring-1 ring-inset 
+                  className={`block w-full rounded-2xl border-0 py-4 px-6 text-gray-900 shadow-sm ring-1 ring-inset 
                     ${errors[field.id] 
                       ? 'ring-red-200 bg-red-50/10 focus:ring-red-500' 
-                      : 'ring-gray-100 bg-gray-50/20 focus:ring-primary-600 focus:bg-white focus:shadow-lg focus:shadow-primary-100/50'} 
-                    placeholder:text-gray-300 focus:ring-2 focus:ring-inset sm:text-sm font-bold transition-all duration-300 outline-hidden`}
-                  {...register(field.id, { required: "Vui lòng nhập thông tin này" })}
+                      : 'ring-gray-100 bg-white/50 focus:ring-primary-600 focus:bg-white focus:shadow-2xl focus:shadow-primary-600/10'} 
+                    placeholder:text-gray-300 focus:ring-2 focus:ring-inset text-sm font-black transition-all duration-300 outline-hidden`}
+                  {...register(field.id, { required: "Action required: Field is mandatory" })}
                 />
+                <div className="absolute inset-x-0 -bottom-px h-px bg-linear-to-r from-transparent via-primary-500/0 to-transparent group-focus-within/field:via-primary-500/50 transition-all duration-500"></div>
                 {errors[field.id] && (
-                  <div className="flex items-center mt-2 text-red-500 animate-fade-in-up">
+                  <div className="flex items-center mt-3 text-red-500 animate-fade-in-up">
                     <span className="text-[10px] font-black uppercase tracking-wider">{errors[field.id].message}</span>
                   </div>
                 )}
