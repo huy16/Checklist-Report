@@ -96,25 +96,28 @@ const PhotoUploadItem = ({ item }) => {
   };
 
   return (
-    <div className="mb-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-      <div className="flex justify-between items-start mb-3">
-        <label className="text-sm font-semibold text-gray-800 leading-tight">
+    <div className={`mb-4 bg-white p-4 rounded-xl shadow-sm border transition-all duration-300 ${currentFiles.length > 0 ? 'border-primary-100 ring-4 ring-primary-50/30' : 'border-gray-100'}`}>
+      <div className="flex justify-between items-start mb-4">
+        <label className="text-sm font-bold text-gray-900 leading-tight tracking-tight flex items-center">
           {item.label}
-          {isMulti && <span className="text-xs font-normal text-gray-500 ml-1">(Tối đa {maxFiles} ảnh)</span>}
+          {item.optional && <span className="ml-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">(Tùy chọn)</span>}
         </label>
       </div>
 
-      <div className="space-y-3">
-        {/* Upload Button - Hidden if max files reached */}
+      <div className="space-y-4">
+        {/* Upload Button */}
         {(isMulti ? currentFiles.length < maxFiles : currentFiles.length === 0) && (
           <label
             htmlFor={`file-upload-${item.id}`}
-            className="flex items-center justify-center w-full px-4 py-3 bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl hover:bg-gray-100 hover:border-primary-400 transition-all cursor-pointer group"
+            className="flex items-center justify-center w-full px-4 py-4 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl hover:bg-primary-50 hover:border-primary-300 transition-all cursor-pointer group active:scale-[0.98]"
           >
-            <Camera className="h-5 w-5 mr-2 text-gray-400 group-hover:text-primary-500" />
-            <span className="text-sm font-medium text-gray-600 group-hover:text-primary-700">
-              {isMulti && currentFiles.length > 0 ? 'Thêm ảnh khác' : 'Chọn Ảnh / Chụp Ảnh'}
-            </span>
+            <div className="flex flex-col items-center">
+              <Camera className="h-6 w-6 mb-1 text-gray-400 group-hover:text-primary-500 transform group-hover:scale-110 transition-transform" />
+              <span className="text-xs font-black text-gray-500 group-hover:text-primary-700 uppercase tracking-wider">
+                {isMulti && currentFiles.length > 0 ? 'Thêm ảnh' : 'Chụp/Chọn Ảnh'}
+              </span>
+              {isMulti && <p className="text-[10px] text-gray-400 mt-1 mt-1 font-medium">Tối đa {maxFiles} ảnh</p>}
+            </div>
             <input
               id={`file-upload-${item.id}`}
               type="file"
@@ -128,24 +131,24 @@ const PhotoUploadItem = ({ item }) => {
 
         {/* Previews List */}
         {previews.length > 0 && (
-          <div className="grid grid-cols-1 gap-2">
+          <div className="grid grid-cols-1 gap-2 animate-fade-in-up">
             {previews.map((preview, idx) => (
-              <div key={idx} className="flex items-center justify-between p-2 rounded-lg border border-gray-200 bg-white shadow-xs">
+              <div key={idx} className="flex items-center justify-between p-2 rounded-xl border border-gray-100 bg-white shadow-sm overflow-hidden group">
                 <div className="flex items-center space-x-3 overflow-hidden">
-                  <div className="h-12 w-16 flex-shrink-0 rounded overflow-hidden bg-gray-100 border border-gray-200">
-                    <img src={preview.url} alt="Preview" className="h-full w-full object-cover" />
+                  <div className="h-14 w-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100 border border-gray-100">
+                    <img src={preview.url} alt="Preview" className="h-full w-full object-cover transition-transform group-hover:scale-110" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-medium text-gray-900 truncate">{preview.name}</p>
-                    <p className="text-[10px] text-gray-500">{formatFileSize(preview.size)}</p>
+                    <p className="text-[11px] font-bold text-gray-900 truncate">{preview.name}</p>
+                    <p className="text-[10px] font-bold text-primary-500 bg-primary-50 inline-block px-1.5 py-0.5 rounded mt-1">{formatFileSize(preview.size)}</p>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => removeFile(idx)}
-                  className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                  className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all active:scale-90"
                 >
-                  <X size={16} />
+                  <X size={18} />
                 </button>
               </div>
             ))}
@@ -154,36 +157,38 @@ const PhotoUploadItem = ({ item }) => {
 
         {/* Status Selection for photo_status items */}
         {hasStatus && (
-          <div className="pt-1">
-            <div className="flex space-x-2">
-              {["Đạt", "Không đạt"].map(opt => (
+          <div className="pt-2">
+            <div className="flex space-x-3">
+              {[ { l: "Đạt", v: "Đạt", c: "green" }, { l: "Không đạt", v: "Không đạt", c: "red" } ].map(opt => (
                 <button
-                  key={opt}
+                  key={opt.v}
                   type="button"
                   onClick={() => {
-                    setValue(`${item.id}_status`, opt, { shouldValidate: true });
-                    if (opt === "Đạt") setValue(`${item.id}_status_reason`, "");
+                    setValue(`${item.id}_status`, opt.v, { shouldValidate: true });
+                    if (opt.v === "Đạt") setValue(`${item.id}_status_reason`, "");
                   }}
-                  className={`flex-1 flex items-center justify-center py-2 rounded-lg border text-xs font-bold transition-all ${
-                    statusValue === opt
-                      ? opt === "Đạt" ? "bg-green-50 border-green-500 text-green-700" : "bg-red-50 border-red-500 text-red-700"
-                      : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50"
+                  className={`flex-1 flex items-center justify-center py-3.5 rounded-2xl border-2 text-xs font-black transition-all transform active:scale-95 ${
+                    statusValue === opt.v
+                      ? opt.v === "Đạt" 
+                        ? "bg-green-500 border-green-500 text-white shadow-lg shadow-green-100" 
+                        : "bg-red-500 border-red-500 text-white shadow-lg shadow-red-100"
+                      : "bg-white border-gray-100 text-gray-400 hover:border-gray-200 hover:bg-gray-50"
                   }`}
                 >
-                  {opt === "Đạt" ? <Check size={14} className="mr-1" /> : <AlertCircle size={14} className="mr-1" />}
-                  {opt}
+                  {opt.v === "Đạt" ? <Check size={16} className="mr-1.5" /> : <AlertCircle size={16} className="mr-1.5" />}
+                  {opt.l.toUpperCase()}
                 </button>
               ))}
             </div>
 
             {statusValue === "Không đạt" && (
-              <div className="mt-2 animate-in fade-in slide-in-from-top-1 duration-300">
+              <div className="mt-3 animate-fade-in-up">
                 <textarea
                   rows={2}
-                  className={`block w-full rounded-lg border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ${
-                    errors[`${item.id}_status_reason`] ? 'ring-red-500' : 'ring-gray-300 focus:ring-red-500'
-                  } placeholder:text-gray-400 focus:ring-2 focus:ring-inset text-xs font-medium`}
-                  placeholder="Nhập lý do không đạt..."
+                  className={`block w-full rounded-xl border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ${
+                    errors[`${item.id}_status_reason`] ? 'ring-red-500' : 'ring-gray-200 focus:ring-red-500'
+                  } placeholder:text-gray-400 focus:ring-2 focus:ring-inset text-sm font-medium transition-all`}
+                  placeholder="Vui lòng nhập lý do cụ thể..."
                   {...register(`${item.id}_status_reason`, { required: statusValue === "Không đạt" })}
                 />
               </div>
@@ -195,16 +200,21 @@ const PhotoUploadItem = ({ item }) => {
       </div>
 
       {isAnalyzing && (
-        <div className="mt-3 flex items-center space-x-2 bg-blue-50 p-2 rounded-lg border border-blue-100 animate-pulse">
-          <div className="w-3.5 h-3.5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-[11px] font-bold text-blue-600">AI đang xử lý...</span>
+        <div className="mt-4 flex items-center space-x-3 bg-primary-50 p-3 rounded-xl border border-primary-100 animate-pulse">
+          <div className="w-4 h-4 border-2 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-xs font-black text-primary-700 uppercase tracking-wider">AI đang phân tích...</span>
         </div>
       )}
 
       {aiResult && !isAnalyzing && (
-        <div className="mt-2 bg-indigo-50/50 p-2.5 rounded-lg border border-indigo-100">
-          <p className="text-[10px] font-bold text-indigo-900 uppercase tracking-tighter mb-0.5">AI Insights</p>
-          <p className="text-xs font-medium text-indigo-700">{aiResult}</p>
+        <div className="mt-3 bg-indigo-50/30 p-4 rounded-xl border border-indigo-100/50 animate-fade-in-up">
+          <div className="flex items-center mb-1">
+            <div className="p-1 bg-indigo-100 rounded-md mr-2">
+              <Sun size={12} className="text-indigo-600" />
+            </div>
+            <p className="text-[10px] font-black text-indigo-900 uppercase tracking-widest">AI Insights</p>
+          </div>
+          <p className="text-[13px] font-bold text-indigo-700 leading-relaxed">{aiResult}</p>
         </div>
       )}
       
