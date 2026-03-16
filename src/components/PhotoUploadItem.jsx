@@ -1,22 +1,51 @@
-import React, { useState } from 'react';
-import { Camera, Upload, X, FileVideo } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Camera, Upload, X, FileVideo, Check, AlertCircle } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 
 const PhotoUploadItem = ({ item }) => {
-  const { register, setValue, watch } = useFormContext();
-  const fileValue = watch(item.id);
-  const [previewUrl, setPreviewUrl] = useState(null);
+  const { register, setValue, watch, formState: { errors } } = useFormContext();
+  const [previews, setPreviews] = useState([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [aiResult, setAiResult] = useState(null);
+
+  const fileValueResult = watch(item.id);
+  const statusValue = watch(`${item.id}_status`);
+  
+  const isMulti = item.type === 'multi_photo';
+  const hasStatus = item.type === 'photo_status' || item.type === 'multi_photo';
+  const maxFiles = item.max || 1;
+
+  // Normalize files to an array
+  const currentFiles = React.useMemo(() => {
+    if (!fileValueResult) return [];
+    if (fileValueResult instanceof FileList) return Array.from(fileValueResult);
+    if (fileValueResult instanceof File) return [fileValueResult];
+    if (Array.isArray(fileValueResult)) return fileValueResult;
+    return [];
+  }, [fileValueResult]);
+
+  useEffect(() => {
+    const newPreviews = currentFiles.map(file => ({
+      url: URL.createObjectURL(file),
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      file: file
+    }));
+    
+    setPreviews(newPreviews);
+    
+    return () => {
+      newPreviews.forEach(p => URL.revokeObjectURL(p.url));
+    };
+  }, [currentFiles]);
 
   const simulateAIAnalysis = (label) => {
     setIsAnalyzing(true);
     setAiResult(null);
 
-    // Simulated analysis time
     setTimeout(() => {
       let result = "Đã phân tích xong: Tình trạng đạt chuẩn.";
-      
       const lowerLabel = label.toLowerCase();
       if (lowerLabel.includes('serial')) {
         result = `Nhận diện Serial: S/N ${Math.floor(Math.random() * 900000000) + 100000000}`;
@@ -25,41 +54,41 @@ const PhotoUploadItem = ({ item }) => {
         result = `Nhiệt độ nhận diện: ${temp}°C (Trong ngưỡng an toàn)`;
       } else if (lowerLabel.includes('pin') || lowerLabel.includes('panel')) {
         result = "Bề mặt pin: Sạch, không nứt vỡ, không bị che bóng.";
-      } else if (lowerLabel.includes('mc4')) {
-        result = "Kết nối MC4: Đã cắm chặt, không lỏng lẻo.";
       }
-
+      
       setAiResult(result);
+      if (hasStatus && !statusValue) {
+        setValue(`${item.id}_status`, "Đạt", { shouldValidate: true });
+      }
       setIsAnalyzing(false);
     }, 2000);
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setValue(item.id, file);
-      // Create preview
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-      
-      // Start AI analysis
+    const newFiles = Array.from(e.target.files);
+    if (newFiles.length > 0) {
+      if (isMulti) {
+        const combined = [...currentFiles, ...newFiles].slice(0, maxFiles);
+        setValue(item.id, combined, { shouldValidate: true });
+      } else {
+        setValue(item.id, newFiles[0], { shouldValidate: true });
+      }
       simulateAIAnalysis(item.label);
     }
   };
 
-  const removeFile = () => {
-    setValue(item.id, null);
-    setPreviewUrl(null);
-    setAiResult(null);
-    setIsAnalyzing(false);
+  const removeFile = (index) => {
+    if (isMulti) {
+      const updated = currentFiles.filter((_, i) => i !== index);
+      setValue(item.id, updated.length > 0 ? updated : null, { shouldValidate: true });
+    } else {
+      setValue(item.id, null, { shouldValidate: true });
+      setAiResult(null);
+    }
   };
-
-  const currentFile = fileValue && fileValue.length > 0 ? fileValue[0] : null;
-  const isVideo = item.type === 'video' || (currentFile && currentFile.type && currentFile.type.startsWith('video/'));
 
   const formatFileSize = (bytes) => {
     if (!bytes) return '';
-    if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -68,85 +97,118 @@ const PhotoUploadItem = ({ item }) => {
 
   return (
     <div className="mb-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-      <div className="flex justify-between mb-2">
-        <label className="text-sm font-medium text-gray-800">
+      <div className="flex justify-between items-start mb-3">
+        <label className="text-sm font-semibold text-gray-800 leading-tight">
           {item.label}
+          {isMulti && <span className="text-xs font-normal text-gray-500 ml-1">(Tối đa {maxFiles} ảnh)</span>}
         </label>
       </div>
 
-      {!fileValue ? (
-        <label
-          htmlFor={`file-upload-${item.id}`}
-          className="mt-2 flex items-center justify-center w-full sm:w-auto px-4 py-2.5 bg-white border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary-600 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500 cursor-pointer transition-colors"
-        >
-          {item.type === 'video' ? (
-            <FileVideo className="h-5 w-5 mr-2 text-gray-400 group-hover:text-primary-500" aria-hidden="true" />
-          ) : (
-            <Camera className="h-5 w-5 mr-2 text-gray-400 group-hover:text-primary-500" aria-hidden="true" />
-          )}
-          <span>{item.type === 'video' ? 'Chọn Video' : 'Chọn Ảnh / Chụp Ảnh'}</span>
-          <input
-            id={`file-upload-${item.id}`}
-            type="file"
-            accept={item.type === 'video' ? "video/*" : "image/*"}
-            className="sr-only"
-            onChange={handleFileChange}
-            {...register(item.id, { required: !item.optional })}
-          />
-        </label>
-      ) : (
-        <div className="mt-2 flex items-center justify-between p-2 rounded-lg border border-gray-200 bg-gray-50 shadow-sm relative group w-full">
-           <div className="flex items-center space-x-3 overflow-hidden">
-             <div className="h-14 w-20 flex-shrink-0 rounded overflow-hidden bg-gray-200 border border-gray-300">
-               {isVideo ? (
-                 <video src={previewUrl} className="h-full w-full object-cover" />
-               ) : (
-                 <img src={previewUrl} alt={item.label} className="h-full w-full object-cover" />
-               )}
-             </div>
-             <div className="min-w-0 flex-1">
-               <p className="text-sm font-medium text-gray-900 truncate" title={currentFile?.name || 'File đã chọn'}>
-                 {currentFile?.name || 'File đã chọn'}
-               </p>
-               <p className="text-xs text-green-600 font-medium">
-                 {currentFile?.size ? `Đã tải lên • ${formatFileSize(currentFile.size)}` : 'Đã tải lên'}
-               </p>
-             </div>
-           </div>
-           
-           <button
-             type="button"
-             onClick={removeFile}
-             className="ml-4 flex-shrink-0 bg-white border border-gray-200 text-red-500 rounded p-1.5 hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-colors focus:outline-hidden"
-             title="Xóa file"
-           >
-             <X size={16} strokeWidth={2} />
-           </button>
-        </div>
-      )}
-      
-      {/* Error message slot if needed, managed by parent or rhf error object */}
-      
+      <div className="space-y-3">
+        {/* Upload Button - Hidden if max files reached */}
+        {(isMulti ? currentFiles.length < maxFiles : currentFiles.length === 0) && (
+          <label
+            htmlFor={`file-upload-${item.id}`}
+            className="flex items-center justify-center w-full px-4 py-3 bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl hover:bg-gray-100 hover:border-primary-400 transition-all cursor-pointer group"
+          >
+            <Camera className="h-5 w-5 mr-2 text-gray-400 group-hover:text-primary-500" />
+            <span className="text-sm font-medium text-gray-600 group-hover:text-primary-700">
+              {isMulti && currentFiles.length > 0 ? 'Thêm ảnh khác' : 'Chọn Ảnh / Chụp Ảnh'}
+            </span>
+            <input
+              id={`file-upload-${item.id}`}
+              type="file"
+              multiple={isMulti}
+              accept="image/*"
+              className="sr-only"
+              onChange={handleFileChange}
+            />
+          </label>
+        )}
+
+        {/* Previews List */}
+        {previews.length > 0 && (
+          <div className="grid grid-cols-1 gap-2">
+            {previews.map((preview, idx) => (
+              <div key={idx} className="flex items-center justify-between p-2 rounded-lg border border-gray-200 bg-white shadow-xs">
+                <div className="flex items-center space-x-3 overflow-hidden">
+                  <div className="h-12 w-16 flex-shrink-0 rounded overflow-hidden bg-gray-100 border border-gray-200">
+                    <img src={preview.url} alt="Preview" className="h-full w-full object-cover" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-medium text-gray-900 truncate">{preview.name}</p>
+                    <p className="text-[10px] text-gray-500">{formatFileSize(preview.size)}</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeFile(idx)}
+                  className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Status Selection for photo_status items */}
+        {hasStatus && (
+          <div className="pt-1">
+            <div className="flex space-x-2">
+              {["Đạt", "Không đạt"].map(opt => (
+                <button
+                  key={opt}
+                  type="button"
+                  onClick={() => {
+                    setValue(`${item.id}_status`, opt, { shouldValidate: true });
+                    if (opt === "Đạt") setValue(`${item.id}_status_reason`, "");
+                  }}
+                  className={`flex-1 flex items-center justify-center py-2 rounded-lg border text-xs font-bold transition-all ${
+                    statusValue === opt
+                      ? opt === "Đạt" ? "bg-green-50 border-green-500 text-green-700" : "bg-red-50 border-red-500 text-red-700"
+                      : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50"
+                  }`}
+                >
+                  {opt === "Đạt" ? <Check size={14} className="mr-1" /> : <AlertCircle size={14} className="mr-1" />}
+                  {opt}
+                </button>
+              ))}
+            </div>
+
+            {statusValue === "Không đạt" && (
+              <div className="mt-2 animate-in fade-in slide-in-from-top-1 duration-300">
+                <textarea
+                  rows={2}
+                  className={`block w-full rounded-lg border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ${
+                    errors[`${item.id}_status_reason`] ? 'ring-red-500' : 'ring-gray-300 focus:ring-red-500'
+                  } placeholder:text-gray-400 focus:ring-2 focus:ring-inset text-xs font-medium`}
+                  placeholder="Nhập lý do không đạt..."
+                  {...register(`${item.id}_status_reason`, { required: statusValue === "Không đạt" })}
+                />
+              </div>
+            )}
+            <input type="hidden" {...register(`${item.id}_status_reason`)} />
+            <input type="hidden" {...register(`${item.id}_status`, { required: !item.optional })} />
+          </div>
+        )}
+      </div>
+
       {isAnalyzing && (
-        <div className="mt-3 flex items-center space-x-2 bg-blue-50/50 p-2.5 rounded-lg border border-blue-100 animate-pulse">
-          <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-xs font-semibold text-blue-600">AI đang phân tích hình ảnh...</span>
+        <div className="mt-3 flex items-center space-x-2 bg-blue-50 p-2 rounded-lg border border-blue-100 animate-pulse">
+          <div className="w-3.5 h-3.5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-[11px] font-bold text-blue-600">AI đang xử lý...</span>
         </div>
       )}
 
       {aiResult && !isAnalyzing && (
-        <div className="mt-3 bg-indigo-50 p-3 rounded-lg border border-indigo-100 shadow-inner overflow-hidden">
-          <div className="flex items-start">
-            <div className="flex-shrink-0 mt-0.5">
-              <div className="bg-indigo-600 h-2 w-2 rounded-full ring-4 ring-indigo-200"></div>
-            </div>
-            <div className="ml-3">
-              <p className="text-xs font-bold text-indigo-900 uppercase tracking-widest mb-1">Kết quả AI</p>
-              <p className="text-sm font-medium text-indigo-700 leading-relaxed">{aiResult}</p>
-            </div>
-          </div>
+        <div className="mt-2 bg-indigo-50/50 p-2.5 rounded-lg border border-indigo-100">
+          <p className="text-[10px] font-bold text-indigo-900 uppercase tracking-tighter mb-0.5">AI Insights</p>
+          <p className="text-xs font-medium text-indigo-700">{aiResult}</p>
         </div>
       )}
+      
+      <input type="hidden" {...register(item.id, { required: !item.optional })} />
     </div>
   );
 };

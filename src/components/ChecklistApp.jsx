@@ -5,8 +5,9 @@ import CategorySection from './CategorySection';
 import { checklistSchema } from '../data/checklistSchema';
 import { omSchema } from '../data/omSchema';
 import { Sun, Share2, FileDown } from 'lucide-react';
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
+import logoCas from '../assets/logo_cas.png';
 
 const ChecklistApp = () => {
   const methods = useForm({
@@ -19,35 +20,68 @@ const ChecklistApp = () => {
   const currentSchema = activeSchemaType === 'install' ? checklistSchema : omSchema;
   
   const onSubmit = async (data) => {
+    console.log("Submitting form with data:", data);
     setIsSubmitting(true);
     
     try {
-      // 1. Setup simple PDF Generator
       const pdf = new jsPDF('p', 'mm', 'a4');
-      pdf.setFontSize(22);
-      pdf.text(activeSchemaType === 'install' ? 'Báo Cáo Lắp Đặt Điện Mặt Trời' : 'Báo Cáo Đo Kiểm Bảo Trì (O&M)', 20, 20);
       
-      pdf.setFontSize(14);
-      pdf.text(`Dự án: ${data.projectName || data.om_projectName || 'N/A'}`, 20, 35);
-      pdf.text(`Địa điểm: ${data.siteLocation || data.om_siteLocation || 'N/A'}`, 20, 45);
-      pdf.text(`Thời gian: ${new Date().toLocaleDateString('vi-VN')}`, 20, 55);
+      // Add Logo
+      try {
+        pdf.addImage(logoCas, 'PNG', 160, 10, 30, 12); 
+      } catch (err) {
+        console.warn("Could not add logo to PDF:", err);
+      }
+
+      pdf.setFontSize(22);
+      pdf.text(activeSchemaType === 'install' ? 'BÁO CÁO LẮP ĐẶT' : 'BÁO CÁO O&M', 20, 20);
       
       pdf.setFontSize(12);
-      pdf.text(`(Báo cáo chi tiết cùng hình ảnh sẽ được hệ thống tổng hợp)`, 20, 75);
+      pdf.text(`Dự án: ${data.projectName || data.om_projectName || 'N/A'}`, 20, 35);
+      pdf.text(`Địa điểm: ${data.siteLocation || data.om_siteLocation || 'N/A'}`, 20, 42);
+      pdf.text(`Thời gian: ${new Date().toLocaleDateString('vi-VN')}`, 20, 49);
+
+      pdf.line(20, 55, 190, 55);
       
-      // Save PDF
+      let yPos = 65;
+      pdf.setFontSize(14);
+      pdf.text("CÁC HẠNG MỤC KIỂM TRA", 20, yPos);
+      yPos += 10;
+      
+      pdf.setFontSize(10);
+      currentSchema.categories.forEach(cat => {
+        pdf.setFont("helvetica", "bold");
+        pdf.text(cat.title, 20, yPos);
+        yPos += 7;
+        pdf.setFont("helvetica", "normal");
+        
+        cat.items.forEach(item => {
+          if (yPos > 270) {
+            pdf.addPage();
+            yPos = 20;
+          }
+          const val = data[item.id] || data[`${item.id}_status`] || "N/A";
+          pdf.text(`- ${item.label}: ${val}`, 25, yPos);
+          yPos += 6;
+        });
+        yPos += 4;
+      });
+      
       const pdfFileName = `Bao_Cao_${activeSchemaType}_${Date.now()}.pdf`;
       pdf.save(pdfFileName);
-      
-      // Notify
-      alert("Báo cáo đã biên dịch và tải xuống máy thành công.");
+      alert("Báo cáo đã được tải xuống.");
       
     } catch (e) {
-      console.error(e);
-      alert("Có lỗi khi tạo báo cáo.");
+      console.error("PDF Error:", e);
+      alert("Lỗi khi tạo PDF: " + e.message);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const onInvalid = (errors) => {
+    console.error("Validation Errors:", errors);
+    alert("Vui lòng hoàn thành tất cả các mục bắt buộc trong các hạng mục checklist.");
   };
   
   const handleZaloShare = () => {
@@ -78,8 +112,8 @@ const ChecklistApp = () => {
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center p-3 bg-yellow-100 rounded-full mb-4">
-            <Sun className="h-8 w-8 text-yellow-500" />
+          <div className="inline-flex items-center justify-center mb-4">
+            <img src={logoCas} alt="CAS Logo" className="h-16 w-auto object-contain" />
           </div>
           <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl">
             Solar System O&M
@@ -122,7 +156,7 @@ const ChecklistApp = () => {
         </div>
 
         <FormProvider {...methods}>
-          <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={methods.handleSubmit(onSubmit, onInvalid)} className="space-y-6">
             <GeneralInfoForm schema={currentSchema.generalInformation} />
             
             <div className="mt-10">
