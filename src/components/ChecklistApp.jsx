@@ -101,11 +101,7 @@ const ChecklistApp = () => {
     alert("Vui lòng hoàn thành tất cả các mục bắt buộc trong các hạng mục checklist.");
   };
   
-  const handleZaloShare = () => {
-    const url = encodeURIComponent(window.location.href);
-    const text = encodeURIComponent(`Báo cáo Checklist ${activeSchemaType === 'install' ? 'Lắp Đặt' : 'O&M'} chuẩn bị hoàn thành.`);
-    window.open(`https://zalo.me/share?url=${url}&text=${text}`, '_blank');
-  };
+
 
   const getFormProgress = () => {
     // Basic approximation of progress based on non-empty fields
@@ -210,14 +206,7 @@ const ChecklistApp = () => {
                 )}
               </button>
               
-              <button
-                type="button"
-                onClick={handleZaloShare}
-                className="flex-1 flex justify-center items-center py-4 px-4 border border-gray-300 rounded-xl shadow-sm leading-6 font-bold text-gray-700 bg-white hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all transform hover:scale-[1.01] active:scale-[0.99] focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                <Share2 className="mr-2 h-5 w-5" />
-                Gửi vào Zalo
-              </button>
+
             </div>
           </form>
         </FormProvider>
