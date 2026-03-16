@@ -1,0 +1,108 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+No.
+Nhóm thi
+ết 
+b
+ị
+Hạng mục công việc Đã thực hiện Giá trị đo Đánh giá tình trạng Phương án đề xuất
+Chụp ảnh tổng quan và Đánh giá Tình trạng 
+Kiểm tra quét nhiệt hệ thống Pin mặt trời (≤65°C)
+Kiểm tra quét nhiệt MC4 (≤45°C)
+Kiểm tra - chụp ảnh tổng quan & chi tiết
+Siết lực ốc kẹp biên, kẹp giữa
+Kiểm tra ống ruột gà đi dây cáp DC trên mái (tình trạng, độ kín)
+Kiểm tra cố định MC4 
+Chụp ảnh tổng quan và Đánh giá Tình trạng 
+Quét nhiệt tổng quan thiết bị hệ thống Tủ AC
+Quét nhiệt Điểm đấu nối vào tủ MSB (≤45°C)
+Quét nhiệt Đầu MC4 (≤45°C)
+Đo điện trở cách điện string DC
+Đo điện trở nối đất
+Siết lực điểm đấu nối MCB AC, DC, domino AC
+Vệ sinh tủ AC - độ kín tủ AC
+Chụp ảnh tổng quan và Đánh giá Tình trạng 
+Kiểm tra Đèn báo tín hiệu và quạt tản nhiệt
+Kiểm tra thoát nhiệt xung quanh inverter
+Quét nhiệt hệ thống Inverter (≤ 45°C)
+Quét nhiệt đầu MC4 (≤ 45°C)
+Quét nhiệt Box AC inverter (≤ 45°C)
+Vệ sinh Inverter & quạt tản nhiệt 
+Siết lực box AC inverter
+Kết nối Mạng Lan
+Kiểm tra thẩm mỹ tổng quan
+Siết lực khung giá đỡ
+Kiểm tra mái che chắc chắn (nếu có)
+Kiểm tra ngoại quan tổng thể
+Độ kín đầu vào - đầu ra  
+Dây cáp
+Kiểm tra dây CT (bọc dây, bảo vệ)
+Kiểm tra dây mạng và ăng-ten của công tơ 
+Kiểm tra mối hàn liên kết
+Kiểm tra độ võng của các vì kèo 
+Mã shop:….......................................................
+1
+Dây tín 
+hiệu
+7
+Kết Cấu
+ Mái
+8
+ACCEPTANCE RECORD/ 
+BIÊN BẢN NGHIỆM THU
+ĐỢT 1
+I. LIST OF CHECK CATEGORY/ DANH SÁCH CÁC HẠNG MỤC KIỂM TRA
+Khung giá 
+đỡ
+Inverter / 
+Tủ AC
+5
+Máng cáp, 
+dây cáp 
+AC - DC 
+6
+Ngày kiểm tra:…..........................................................................
+Tủ AC
+3
+Inverter
+4
+Hệ thống
+ Pin mặt trời
+Khung giá 
+đỡ hệ
+ thống pin 
+mặt trời
+2
+AUTOMATE YOUR BUSINESS & FREE YOUR MIND
