@@ -8,7 +8,6 @@ const TextItem = ({ item }) => {
     <div className="mb-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
       <label htmlFor={item.id} className="block text-sm font-medium text-gray-800 mb-2">
         {item.label}
-        {item.optional && <span className="ml-2 text-xs text-gray-400 font-normal">(Tùy chọn)</span>}
       </label>
       <input
         type={item.inputType || "text"}

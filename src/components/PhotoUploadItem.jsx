@@ -71,7 +71,6 @@ const PhotoUploadItem = ({ item }) => {
       <div className="flex justify-between mb-2">
         <label className="text-sm font-medium text-gray-800">
           {item.label}
-          {item.optional && <span className="ml-2 text-xs text-gray-400 font-normal">(Tùy chọn)</span>}
         </label>
       </div>
 
