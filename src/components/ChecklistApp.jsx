@@ -68,8 +68,25 @@ const ChecklistApp = () => {
       });
       
       const pdfFileName = `Bao_Cao_${activeSchemaType}_${Date.now()}.pdf`;
-      pdf.save(pdfFileName);
-      alert("Báo cáo đã được tải xuống.");
+      
+      // Better download method for mobile: Use Blob + URL.createObjectURL
+      const blob = pdf.output('blob');
+      const url = URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = pdfFileName;
+      
+      // On some mobile devices, we need to append to body
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Optional: open in new tab for certain browsers where download is blocked
+      // window.open(url, '_blank'); 
+
+      setTimeout(() => URL.revokeObjectURL(url), 100);
+      alert("Báo cáo đang được tải xuống. Vui lòng kiểm tra thư mục Tải về (Downloads) trên máy.");
       
     } catch (e) {
       console.error("PDF Error:", e);
